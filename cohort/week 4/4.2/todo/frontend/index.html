@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+</head>
+<body>
+    <div class="container">
+        <div class="addNew">
+            <div class="new">
+                <label for="todoInput">Enter todo: </label>
+                <input type="text" id="todoInput">
+            </div>
+            <div class="submit">
+                <button onclick="addTodo()" >Add todo</button>
+            </div>
+
+        </div>
+        <div class="list">
+            <div class="heading"><h1>Todo List </h1></div>
+            <div>
+                <ul id="todoList"></ul>
+            </div>
+        </div>
+        
+        </div>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

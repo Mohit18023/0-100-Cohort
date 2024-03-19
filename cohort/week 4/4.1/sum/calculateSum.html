@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>calculate sum</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="firstNumber">
+        <label for="number1">enter the first number: </label>
+        <input oninput="debouncepopulateDiv()" type="number" id="number1" />
+      </div>
+      <div class="secondtNumber">
+        <label for="number2">enter the first number: </label>
+        <input oninput="debouncepopulateDiv()" type="number" id="number2" />
+      </div>
+
+      <div class="result">
+        <p id="result"></p>
+      </div>
+    </div>
+    <script src="calculateSum.js"></script>
+  </body>
+</html>
