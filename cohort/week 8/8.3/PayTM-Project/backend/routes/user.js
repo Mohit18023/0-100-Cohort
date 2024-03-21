@@ -1,96 +1,99 @@
+// backend/routes/user.js
 const express = require("express");
-const zod = require("zod");
-const { JWT_SECRET } = require("../config");
-const jwt = require("jsonwebtoken");
-const { User } = require("../db");
-const { authMiddelware } = require("../middleware");
-const {Account} = require("../db");
+
 const router = express.Router();
+const zod = require("zod");
+const { User, Account } = require("../db");
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("../config");
+const { authMiddleware } = require("../middleware");
 
-const signupSchema = zod.object({
-  username: zod.string().min(3).max(30),
-  password: zod.string().min(8),
-  firstName: zod.string().max(30),
-  lastName: zod.string().max(30),
-});
-
-const LoginSchema = zod.object({
-  username: zod.string().min(3).max(30),
-  password: zod.string().min(8),
+const signupBody = zod.object({
+  username: zod.string().email(),
+  firstName: zod.string(),
+  lastName: zod.string(),
+  password: zod.string(),
 });
 
 router.post("/signup", async (req, res) => {
-  try {
-    const user = req.body;
-    const res = signupSchema.safeParse(user);
-
-    if (!res.success) {
-      res.send(411).json({ message: "Incorrect inputs" });
-      // Early Return
-      return;
-    }
-    // check if the user exists in the database
-    const userExists = await User.findOne({ username: user.username });
-    if (userExists) {
-      res.status(411).json({ message: "User already exists" });
-      // Early Return
-      return;
-    }
-    // create new user
-    const newUser = await User.create({
-      username: user.username,
-      password: user.password,
-      firstName: user.firstName,
-      lastName: user.lastName,
+  const { success } = signupBody.safeParse(req.body);
+  if (!success) {
+    return res.status(411).json({
+      message: "Email already taken / Incorrect inputs",
     });
-    // take user Id
-    const userId = newUser._id;
-    // Create account for the user
-    const account = new Account.create({
-        userId,
-        balance: 1 + Math.random()*1000
-    });
-
-    // if user does not exist then make a token and send it to the user
-    const token = jwt.sign(userId, JWT_SECRET);
-
-    // save the user in the database
-
-    // send the token to the user
-    res.status(200).json({ message: "User signed up successfully", token });
-  } catch (error) {
-    console.error(`Error in user signup: ${error}`);
   }
+
+  const existingUser = await User.findOne({
+    username: req.body.username,
+  });
+
+  if (existingUser) {
+    return res.status(411).json({
+      message: "Email already taken/Incorrect inputs",
+    });
+  }
+
+  const user = await User.create({
+    username: req.body.username,
+    password: req.body.password,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+  });
+  const userId = user._id;
+
+  await Account.create({
+    userId,
+    balance: 1 + Math.random() * 10000,
+  });
+
+  const token = jwt.sign(
+    {
+      userId,
+    },
+    JWT_SECRET
+  );
+
+  res.json({
+    message: "User created successfully",
+    token: token,
+  });
+});
+
+const signinBody = zod.object({
+  username: zod.string().email(),
+  password: zod.string(),
 });
 
 router.post("/signin", async (req, res) => {
-  try {
-    const user = req.body;
-    const res = LoginSchema.safeParse(user);
-    if (!res.success) {
-      // if user doesnot exist then send the response
-      res.send(411).json({ message: "Incorrect Inputs" });
-      // Early Return
-      return;
-    }
-    // check if the user exists in the database
-    const userExists = await User.findOne({
-      username: user.username,
-      password: user.password,
+  const { success } = signinBody.safeParse(req.body);
+  if (!success) {
+    return res.status(411).json({
+      message: "Email already taken / Incorrect inputs",
     });
-
-    if (!userExists) {
-      res.status(400).json({ message: "User does not exist" });
-      // Early Return
-      return;
-    }
-    // if user exists then make a token and send it to the user
-    const token = jwt.sign({ userId: userExists._id }, JWT_SECRET);
-    res.status(200).json({ token });
-  } catch (error) {
-    // if error occurs then send the response
-    res.status(411).json({ message: "Error while logging in" });
   }
+
+  const user = await User.findOne({
+    username: req.body.username,
+    password: req.body.password,
+  });
+
+  if (user) {
+    const token = jwt.sign(
+      {
+        userId: user._id,
+      },
+      JWT_SECRET
+    );
+
+    res.json({
+      token: token,
+    });
+    return;
+  }
+
+  res.status(411).json({
+    message: "Error while logging in",
+  });
 });
 
 const updateBody = zod.object({
@@ -99,41 +102,23 @@ const updateBody = zod.object({
   lastName: zod.string().optional(),
 });
 
-// update user infprmation on default route of user i.e. api/v1/user
-router.put("/", authMiddelware, async (req, res) => {
-  // check if the user is present in the database through authMiddleware
-
-  // now check the if the input is correct or not
+router.put("/", authMiddleware, async (req, res) => {
   const { success } = updateBody.safeParse(req.body);
-  // if input is not correct then send the response
   if (!success) {
-    // if the input are not correct then sendong the 411 error response
     res.status(411).json({
       message: "Error while updating information",
     });
-    // Early Return
-    return;
   }
 
-  // if the input is correct then update the user information
-  // check if the user is present in the database through authMiddleware
+  await User.updateOne(req.body, {
+    id: req.userId,
+  });
 
-  // now update the user information , finding the user by id and updating the user information
-  await User.updateOne({ _id: req.userId }, req.body);
-
-  // send the response
   res.json({
-    message: "User updated successfully",
+    message: "Updated successfully",
   });
 });
 
-// making the zod schema to check the input given by the user
-const getUser = zod.object({
-  firstName: zod.string().optional(),
-  lastName: zod.string().optional(),
-});
-
-// route to get the users from the backend , filterable via firstName and lastName
 router.get("/bulk", async (req, res) => {
   const filter = req.query.filter || "";
 
@@ -151,6 +136,7 @@ router.get("/bulk", async (req, res) => {
       },
     ],
   });
+
   res.json({
     user: users.map((user) => ({
       username: user.username,
@@ -160,9 +146,5 @@ router.get("/bulk", async (req, res) => {
     })),
   });
 });
-
-
-// route for accounts 
-
 
 module.exports = router;
