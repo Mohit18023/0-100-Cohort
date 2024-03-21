@@ -1,24 +1,15 @@
-const express = require('express');
-const rootRouter = require('./routes/index');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
+// backend/index.js
+const express = require("express");
+const cors = require("cors");
+const rootRouter = require("./routes/index");
 
-// defining port
-const PORT = 3000;
-
-// defining express
 const app = express();
 
-// defining cors
 app.use(cors());
-
-
-// defining express.json
 app.use(express.json());
 
-// introduce main router so that we can use all the routes in the index.js
-app.use('/api/v1',rootRouter);
+app.use("/api/v1", rootRouter);
 
-app.listen(PORT,()=>{
-    console.log(`Server is running at port ${PORT}`);
-})
+app.listen(5000,()=>{
+    console.log("Server started at port 3000")
+});

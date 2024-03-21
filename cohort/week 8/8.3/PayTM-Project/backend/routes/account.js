@@ -1,25 +1,21 @@
+// backend/routes/account.js
 const express = require("express");
-const authMiddelware = require("../middleware");
+const { authMiddleware } = require("../middleware");
 const { Account } = require("../db");
-const { User } = require("../db");
+const { default: mongoose } = require("mongoose");
+
 const router = express.Router();
-const zod = require("zod");
 
-// A schema for the transfer request
-const tranferSchema = zod.object({
-  to: zod.string(),
-  amount: zod.coerce.number().gt(0),
-});
+router.get("/balance", authMiddleware, async (req, res) => {
+  const account = await Account.findOne({
+    userId: req.userId,
+  });
 
-router.get("/balance", authMiddelware, async (req, res) => {
-  // now get the balance and give it to the user
-  const account = await Account.findOne({ userId: req.userId });
   res.json({
     balance: account.balance,
   });
 });
 
-// An endpoint for user to transfer money to another account
 router.post("/transfer", authMiddleware, async (req, res) => {
   const session = await mongoose.startSession();
 

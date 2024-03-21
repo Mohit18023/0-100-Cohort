@@ -2,10 +2,7 @@ const mongoose = require("mongoose");
 
 const ConnectionString =
   "mongodb+srv://mohitchoudhary1054:Y9gBmAVPuQO1SQF6@paytm.poms6ao.mongodb.net/paytm";
-mongoose.connect(ConnectionString, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(ConnectionString);
 
 const db = mongoose.connection;
 
