@@ -9,5 +9,5 @@ export const Balance = ({ value }) => {
 };
 
 Balance.propTypes = {
-    value: propTypes.number
+    value: propTypes.string
 }
