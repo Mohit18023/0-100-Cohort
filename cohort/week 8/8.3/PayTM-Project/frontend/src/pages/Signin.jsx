@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { BottomWarning } from "../components/BottomWarning";
 import { Button } from "../components/Button";
 import { Heading } from "../components/Heading";
@@ -26,3 +27,14 @@ export const Signin = () => {
     </div>
   );
 };
+=======
+
+
+export default function Signin() {
+  return (
+    <div>
+      signin
+    </div>
+  )
+}
+>>>>>>> 421092f75ac3b4f2cc2b3ac8a6f3a4c9ef6b8609
