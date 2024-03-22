@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import propTypes from "prop-types";
-export default function Warning({ label, buttonText, to }) {
+export function BottomWarning({ label, buttonText, to }) {
   return (
     <div className="py-2 text-sm flex justify-center">
       <div>{label}</div>
@@ -11,7 +11,7 @@ export default function Warning({ label, buttonText, to }) {
   );
 }
 
-Warning.propTypes = {
+BottomWarning.propTypes = {
     label: propTypes.string,
     buttonText: propTypes.string,
     to: propTypes.string,

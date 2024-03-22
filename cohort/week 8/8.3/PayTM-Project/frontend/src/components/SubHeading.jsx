@@ -1,12 +1,8 @@
 import propTypes from 'prop-types';
-export default function SubHeading({lable}) {
-  return (
-    <div className="text-md text-slate-500 pt-1 px-4 pb-4">
-      {lable}
-    </div>
-  )
+export function SubHeading({ label }) {
+  return <div className="text-slate-500 text-md pt-1 px-4 pb-4">{label}</div>;
 }
 
 SubHeading.propTypes = {
-  lable: propTypes.string
+  label: propTypes.string
 }
