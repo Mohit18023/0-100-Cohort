@@ -30,7 +30,9 @@ export default function DebounceHook() {
             onChange={(e) => setValue(e.target.value)}
         />
         <p>Debounced value: {debouncedValue}</p>
-                        
+
     </div>
   )
 }
+
+
