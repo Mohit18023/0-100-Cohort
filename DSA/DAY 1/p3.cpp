@@ -4,3 +4,9 @@
 // Note that, in english alphabet, vowels are a, e, i, o, and u.
 
 
+#include<iostream>
+using namespace std;
+
+int main(){
+
+}
